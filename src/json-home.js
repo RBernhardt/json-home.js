@@ -1,12 +1,6 @@
 (function($){
     "use strict";
 
-    function JsonHome(data) {
-        if(data) {
-            this.parse(data);
-        }
-    }
-
     function JsonHomeResource(data) {
         if(data) {
             this.parse(data);
@@ -57,6 +51,12 @@
         }
 
     };
+
+    function JsonHome(data) {
+        if(data) {
+            this.parse(data);
+        }
+    }
 
     JsonHome.prototype = {
 
