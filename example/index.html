@@ -11,9 +11,17 @@
             url:"example.json",
             success: function(jsonHome) {
                 var resources = jsonHome.listResources();
-                jQuery.each(resources, function(idx, item) {
-                    console.log(item.getHref());
+                jQuery.each(resources, function(key, value) {
+                    console.log(value);
                 });
+                // ~
+                var widgetsResource = jsonHome.get("http://example.org/rel/widgets");
+                console.log(widgetsResource.getHref());
+                console.log(jsonHome.getHref("http://example.org/rel/widgets"));
+                // ~
+                var widgetResource = jsonHome.get("http://example.org/rel/widget");
+                console.log(widgetResource.getHref({"http://example.org/param/widget" : 123456}));
+                console.log(jsonHome.getHref("http://example.org/rel/widget", {"http://example.org/param/widget" : 123456}));
             }
         });
     </script>

@@ -45,35 +45,44 @@
                 return;
             }
             // ~
-            var resources = new Array();
+            var resources = new Object();
             $.each(data["resources"], function(key, value) {
-                resources.push(new JsonHomeResource(key, value));
+                resources[key] = new JsonHomeResource(value);
             });
             this.resources = resources;
         },
 
         listResources: function() {
             return this.resources;
+        },
+
+        get: function(id) {
+            return this.resources[id];
+        },
+
+        getHref: function(id, vars) {
+            var resource = this.resources[id];
+            if(resource) {
+                return resource.getHref(vars);
+            }
+            return null;
         }
 
     };
 
-    function JsonHomeResource(id, data) {
-        if(id && data) {
-            this._parse(id, data);
+    function JsonHomeResource(data) {
+        if(data) {
+            this._parse(data);
         }
     }
 
     JsonHomeResource.prototype = {
 
-        id: null,
         href: null,
         hrefTemplate: null,
         hrefVars: null,
 
-        _parse: function(id, data) {
-            this.id = id;
-            // ~
+        _parse: function(data) {
             if(data["href"]) {
                 this.href = data["href"];
             }
