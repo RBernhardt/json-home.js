@@ -2,11 +2,11 @@
 
 Javascript library for JSON Home Documents
 
-* Home Documents for HTTP APIs ([http://tools.ietf.org/html/draft-nottingham-json-home-02](http://tools.ietf.org/html/draft-nottingham-json-home-02))
+Home Documents for HTTP APIs ([http://tools.ietf.org/html/draft-nottingham-json-home-02](http://tools.ietf.org/html/draft-nottingham-json-home-02))
 
 ## Requires
 
-* jQuery. Pull requests for a jQuery-less version are welcome.
+jQuery [Pull requests for a jQuery-less version are welcome.]
 
 ## Licensing
 
