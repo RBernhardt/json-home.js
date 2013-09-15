@@ -1,78 +1,15 @@
 (function($){
-
-    $.getJsonHome = function(options) {
-
-        options = $.extend({
-            url: null,
-            success: null,
-            error: function(xhr, msg, e) {
-                if( console && console.log ) {
-                    console.log("[ERROR]", xhr, msg, e);
-                }
-            },
-            dataType: "json"
-        }, options);
-
-        if(options.url) {
-            $.ajax({
-                url: options.url,
-                mimeType: "application/json-home",
-                dataType: options.dataType,
-                success: function(data) {
-                    if($.isFunction(options.success)) {
-                        options.success(new JsonHome(data));
-                    }
-                },
-                error: options.error
-            });
-        }
-
-    };
+    "use strict";
 
     function JsonHome(data) {
         if(data) {
-            this._parse(data);
+            this.parse(data);
         }
-    };
-
-    JsonHome.prototype = {
-
-        resources: new Object(),
-
-        _parse: function(data) {
-            if(!data["resources"]) {
-                console.log("[ERROR] resources property expected");
-                return;
-            }
-            // ~
-            var resources = new Object();
-            $.each(data["resources"], function(key, value) {
-                resources[key] = new JsonHomeResource(value);
-            });
-            this.resources = resources;
-        },
-
-        listResources: function() {
-            return this.resources;
-        },
-
-        get: function(id) {
-            return this.resources[id];
-        },
-
-        getHref: function(id, vars) {
-            var resource = this.resources[id];
-            if(resource) {
-                return resource.getHref(vars);
-            }
-            return null;
-        }
-
-    };
+    }
 
     function JsonHomeResource(data) {
         if(data) {
-            this._parse(data);
+            this.parse(data);
         }
     }
 
@@ -82,9 +19,9 @@
         hrefTemplate: null,
         hrefVars: null,
 
-        _parse: function(data) {
-            if(data["href"]) {
-                this.href = data["href"];
+        parse: function(data) {
+            if(data.href) {
+                this.href = data.href;
             }
             if(data["href-template"]) {
                 this.hrefTemplate = data["href-template"];
@@ -119,6 +56,69 @@
             return null;
         }
 
-    }
+    };
 
-})(jQuery);
+    JsonHome.prototype = {
+
+        resources: {},
+
+        parse: function(data) {
+            if(!data.resources) {
+                console.log("[ERROR] resources property expected");
+                return;
+            }
+            // ~
+            var self = this;
+            $.each(data.resources, function(key, value) {
+                self.resources[key] = new JsonHomeResource(value);
+            });
+        },
+
+        listResources: function() {
+            return this.resources;
+        },
+
+        get: function(id) {
+            return this.resources[id];
+        },
+
+        getHref: function(id, vars) {
+            var resource = this.resources[id];
+            if(resource) {
+                return resource.getHref(vars);
+            }
+            return null;
+        }
+
+    };
+
+    $.getJsonHome = function(options) {
+
+        options = $.extend({
+            url: null,
+            success: null,
+            error: function(xhr, msg, e) {
+                if( console && console.log ) {
+                    console.log("[ERROR]", xhr, msg, e);
+                }
+            },
+            dataType: "json"
+        }, options);
+
+        if(options.url) {
+            $.ajax({
+                url: options.url,
+                mimeType: "application/json-home",
+                dataType: options.dataType,
+                success: function(data) {
+                    if($.isFunction(options.success)) {
+                        options.success(new JsonHome(data));
+                    }
+                },
+                error: options.error
+            });
+        }
+
+    };
+
+}(jQuery));
