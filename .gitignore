@@ -8,6 +8,7 @@ build
 **/*.ipr
 **/out
 **/build
+**/.AppleDouble
 .gradle
 .idea
 *.log

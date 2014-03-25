@@ -52,7 +52,8 @@
 
     };
 
-    function JsonHome(data) {
+    function JsonHome(jsonHomeUrl, data) {
+        this.jsonHomeUrl = jsonHomeUrl;
         if(data) {
             this.parse(data);
         }
@@ -85,7 +86,8 @@
         getHref: function(id, vars) {
             var resource = this.resources[id];
             if(resource) {
-                return resource.getHref(vars);
+                var href = resource.getHref(vars);
+                return magicCombine(this.jsonHomeUrl, href);
             }
             return null;
         }
@@ -112,7 +114,7 @@
                 dataType: options.dataType,
                 success: function(data) {
                     if($.isFunction(options.success)) {
-                        options.success(new JsonHome(data));
+                        options.success(new JsonHome(options.url, data));
                     }
                 },
                 error: options.error
@@ -120,5 +122,34 @@
         }
 
     };
+
+    function magicCombine(a, b){
+        if(b.indexOf('://') != -1) return b;
+
+        var backs = 0;
+        var lastIndex = b.indexOf('../');
+
+        while(lastIndex != -1){
+            backs++;
+            lastIndex = b.indexOf('../', lastIndex+3);
+        }
+
+        var URL = a.split('/');
+        //Remove last part of URL array, which is always either the file name or [BLANK]
+        URL.splice(URL.length-1, 1)
+
+        if(b.substr(0,1) == '/')
+            b = b.substr(1);
+        var toAdd = b.split('/');
+
+        for(var i = 0, c = toAdd.length-backs; i < c; ++i){
+            if(i < backs)
+                URL[URL.length - (backs-i)] = toAdd[backs+i];
+            else
+                URL.push(toAdd[backs+i]);
+        }
+
+        return URL.join('/');
+    }
 
 }(jQuery));
