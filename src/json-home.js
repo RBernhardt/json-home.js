@@ -2,6 +2,10 @@
     "use strict";
 
     function JsonHomeResource(data) {
+        this.href = null;
+        this.hrefTemplate = null;
+        this.hrefVars = null;
+        // ~
         if(data) {
             this.parse(data);
         }
@@ -9,9 +13,7 @@
 
     JsonHomeResource.prototype = {
 
-        href: null,
-        hrefTemplate: null,
-        hrefVars: null,
+
 
         parse: function(data) {
             if(data.href) {
@@ -54,14 +56,14 @@
 
     function JsonHome(jsonHomeUrl, data) {
         this.jsonHomeUrl = jsonHomeUrl;
+        this.resources = {};
+        // ~
         if(data) {
             this.parse(data);
         }
     }
 
     JsonHome.prototype = {
-
-        resources: {},
 
         parse: function(data) {
             if(!data.resources) {
@@ -87,7 +89,7 @@
             var resource = this.resources[id];
             if(resource) {
                 var href = resource.getHref(vars);
-                return magicCombine(this.jsonHomeUrl, href);
+                return resolve(href, this.jsonHomeUrl);
             }
             return null;
         }
@@ -123,33 +125,22 @@
 
     };
 
-    function magicCombine(a, b){
-        if(b.indexOf('://') != -1) return b;
+    function resolve(url, base_url) {
+        var doc      = document
+            , old_base = doc.getElementsByTagName('base')[0]
+            , old_href = old_base && old_base.href
+            , doc_head = doc.head || doc.getElementsByTagName('head')[0]
+            , our_base = old_base || doc_head.appendChild(doc.createElement('base'))
+            , resolver = doc.createElement('a')
+            , resolved_url
+            ;
+        our_base.href = base_url;
+        resolver.href = url;
+        resolved_url  = resolver.href; // browser magic at work here
 
-        var backs = 0;
-        var lastIndex = b.indexOf('../');
-
-        while(lastIndex != -1){
-            backs++;
-            lastIndex = b.indexOf('../', lastIndex+3);
-        }
-
-        var URL = a.split('/');
-        //Remove last part of URL array, which is always either the file name or [BLANK]
-        URL.splice(URL.length-1, 1)
-
-        if(b.substr(0,1) == '/')
-            b = b.substr(1);
-        var toAdd = b.split('/');
-
-        for(var i = 0, c = toAdd.length-backs; i < c; ++i){
-            if(i < backs)
-                URL[URL.length - (backs-i)] = toAdd[backs+i];
-            else
-                URL.push(toAdd[backs+i]);
-        }
-
-        return URL.join('/');
+        if (old_base) old_base.href = old_href;
+        else doc_head.removeChild(our_base);
+        return resolved_url;
     }
 
 }(jQuery));
